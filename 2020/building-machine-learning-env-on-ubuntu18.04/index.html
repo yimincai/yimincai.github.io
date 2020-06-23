@@ -40,7 +40,7 @@
 <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fbuilding-machine-learning-env-on-ubuntu18.04%2Fconda-info.png?alt=media&amp;token=6a57f8d9-f8c9-4e23-b6ff-5f51671bf814">
 <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fbuilding-machine-learning-env-on-ubuntu18.04%2Fcreate-venv-y.png?alt=media&amp;token=38b2dd0f-f86e-4fee-b45e-9bcbd939323a">
 <meta property="article:published_time" content="2020-06-05T11:50:07.000Z">
-<meta property="article:modified_time" content="2020-06-23T15:11:12.508Z">
+<meta property="article:modified_time" content="2020-06-23T15:18:15.617Z">
 <meta property="article:author" content="Yi-Min">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="Ubuntu">
@@ -254,7 +254,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-06-23 23:11:12" itemprop="dateModified" datetime="2020-06-23T23:11:12+08:00">2020-06-23</time>
+                <time title="Modified: 2020-06-23 23:18:15" itemprop="dateModified" datetime="2020-06-23T23:18:15+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -286,14 +286,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>2.7k</span>
+              <span>2.8k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
+              <span>3 mins.</span>
             </span>
 
         </div>
@@ -385,13 +385,13 @@
 <ul>
 <li><a href="https://yimincai.net/2020/tensorflow-corresponding-to-keras-version">Tensorflow與Keras版本對應</a></li>
 </ul>
-<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pip install numpy</span><br><span class="line">pip install pandas</span><br><span class="line">pip install scikit-learn</span><br><span class="line">pip install --upgrade tensorflow</span><br><span class="line">pip install Keras</span><br><span class="line">pip install Pillow</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pip install numpy</span><br><span class="line">pip install pandas</span><br><span class="line">pip install scikit-learn</span><br><span class="line">pip install --upgrade tensorflow</span><br><span class="line">pip install Keras</span><br><span class="line">pip install Pillow</span><br><span class="line">pip install tensorflow</span><br><span class="line">pip install torch</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">etc.</span><br></pre></td></tr></tbody></table></figure>
 
 <p>⚠ 若在 <code>import tensorflow as tf</code> 時出現： <code>Illegal instruction (core dumped)</code>經確認是CPU缺少avx指令集的關係（CPU架構太舊不支援）。</p>
 <p>可降低Tensorflow版本解決</p>
-<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip3 uninstall tensorflow</span><br><span class="line"><span class="comment"># and then</span></span><br><span class="line">pip3 install tensorflow==1.4</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip uninstall tensorflow</span><br><span class="line"><span class="comment"># and then</span></span><br><span class="line">pip install tensorflow==1.4</span><br></pre></td></tr></tbody></table></figure>
 
-<p><mark>Continue .. </mark></p>
+<!-- <mark>Continue .. </mark> -->
 <script>
         document.querySelectorAll('.github-emoji')
           .forEach(el => {

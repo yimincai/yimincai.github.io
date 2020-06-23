@@ -83,13 +83,13 @@
 <ul>
 <li><a href="https://yimincai.net/2020/tensorflow-corresponding-to-keras-version">Tensorflow與Keras版本對應</a></li>
 </ul>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">pip install numpy</span><br><span class="line">pip install pandas</span><br><span class="line">pip install scikit-learn</span><br><span class="line">pip install --upgrade tensorflow</span><br><span class="line">pip install Keras</span><br><span class="line">pip install Pillow</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">pip install numpy</span><br><span class="line">pip install pandas</span><br><span class="line">pip install scikit-learn</span><br><span class="line">pip install --upgrade tensorflow</span><br><span class="line">pip install Keras</span><br><span class="line">pip install Pillow</span><br><span class="line">pip install tensorflow</span><br><span class="line">pip install torch</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">etc.</span><br></pre></td></tr></tbody></table></figure>
 
 <p>⚠ 若在 <code>import tensorflow as tf</code> 時出現： <code>Illegal instruction (core dumped)</code>經確認是CPU缺少avx指令集的關係（CPU架構太舊不支援）。</p>
 <p>可降低Tensorflow版本解決</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">pip3 uninstall tensorflow</span><br><span class="line"><span class="comment"># and then</span></span><br><span class="line">pip3 install tensorflow==1.4</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">pip uninstall tensorflow</span><br><span class="line"><span class="comment"># and then</span></span><br><span class="line">pip install tensorflow==1.4</span><br></pre></td></tr></tbody></table></figure>
 
-<p><mark>Continue .. </mark></p>
+<!-- <mark>Continue .. </mark> -->
 <script>
         document.querySelectorAll('.github-emoji')
           .forEach(el => {
