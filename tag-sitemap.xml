@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+
+    <url>
+        <loc>https://yimincai.net/tags/Conda-venv/</loc>
+        <lastmod>2020-06-23T15:11:12.508Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Python-venv/</loc>
+        <lastmod>2020-06-23T15:11:12.508Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Openssh-server/</loc>
+        <lastmod>2020-06-23T15:11:12.508Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Machine-Learning/</loc>
+        <lastmod>2020-06-23T15:11:12.508Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Ubuntu/</loc>
+        <lastmod>2020-06-23T15:11:12.508Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Linux/</loc>
+        <lastmod>2020-06-23T15:11:12.508Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Python/</loc>
+        <lastmod>2020-06-09T16:56:13.157Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Visual-Studio-Code/</loc>
+        <lastmod>2020-06-09T16:56:13.157Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Miniconda/</loc>
+        <lastmod>2020-06-09T16:56:13.157Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Windows/</loc>
+        <lastmod>2020-06-09T16:56:13.157Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Tensorflow/</loc>
+        <lastmod>2020-06-09T16:56:13.157Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Terminal/</loc>
+        <lastmod>2020-06-09T16:50:41.064Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Keras/</loc>
+        <lastmod>2020-06-09T16:50:41.062Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/oh-my-zsh/</loc>
+        <lastmod>2020-06-09T16:50:41.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/zsh/</loc>
+        <lastmod>2020-06-09T16:50:41.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/macOS/</loc>
+        <lastmod>2020-06-09T16:50:41.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/ESXi/</loc>
+        <lastmod>2020-06-09T16:50:41.058Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Node-js/</loc>
+        <lastmod>2020-06-09T16:50:41.057Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/NVM/</loc>
+        <lastmod>2020-06-09T16:50:41.057Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/POP3/</loc>
+        <lastmod>2020-06-09T16:50:41.057Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/IMAP/</loc>
+        <lastmod>2020-06-09T16:50:41.057Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/SMTP/</loc>
+        <lastmod>2020-06-09T16:50:41.057Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Mail-Server/</loc>
+        <lastmod>2020-06-09T16:50:41.057Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Docker-Compose/</loc>
+        <lastmod>2020-06-09T16:50:41.057Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Docker/</loc>
+        <lastmod>2020-06-09T16:50:41.057Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/next/</loc>
+        <lastmod>2020-06-09T16:50:41.056Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Github-page/</loc>
+        <lastmod>2020-06-09T16:50:41.056Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/custom-domain/</loc>
+        <lastmod>2020-06-09T16:50:41.056Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Hexo/</loc>
+        <lastmod>2020-06-09T16:50:41.056Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/SSL/</loc>
+        <lastmod>2020-06-09T16:50:41.056Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://yimincai.net/tags/Web/</loc>
+        <lastmod>2020-06-09T16:50:41.056Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+</urlset>
+<!-- XML Sitemap generated by Hexo SEO Friendly Sitemap Generator -->

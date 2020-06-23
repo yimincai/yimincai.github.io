@@ -1,0 +1,1409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Machine Learning Ubuntu 18.04 環境建置手札</title>
+    <url>/2020/building-machine-learning-env-on-ubuntu18.04/</url>
+    <content><![CDATA[<h1 id="重新安裝ssh-server"><a href="#重新安裝ssh-server" class="headerlink" title="重新安裝ssh server"></a>重新安裝ssh server</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo apt-get remove openssh-server</span><br><span class="line">sudo reboot</span><br><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></tbody></table></figure>
+<a id="more"></a>
+
+<h1 id="ssh允許使用root登入"><a href="#ssh允許使用root登入" class="headerlink" title="ssh允許使用root登入"></a>ssh允許使用root登入</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"><span class="comment"># change "PermitRootLogin no" to "PermitRootLogin yes"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="ssh免密碼登入"><a href="#ssh免密碼登入" class="headerlink" title="ssh免密碼登入"></a>ssh免密碼登入</h1><p>建立ssh rsa key</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">[neil@yimincai.net ~]$ ssh-keygen -t rsa</span><br><span class="line"></span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file <span class="keyword">in</span> <span class="built_in">which</span> to save the key (/home/neil/.ssh/id_rsa): [Press enter key]</span><br><span class="line">Created directory <span class="string">'/home/neil/.ssh'</span>.</span><br><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase): [Press enter key]</span><br><span class="line">Enter same passphrase again: [Press enter key]</span><br><span class="line">Your identification has been saved <span class="keyword">in</span> /home/neil/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved <span class="keyword">in</span> /home/neil/.ssh/id_rsa.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line">1f:ad:49:00:4a:d5:ab:99:b3:b0:f9:09:91:c4:ed:d2 neil@yimincai.net</span><br><span class="line">The key<span class="string">'s randomart image is:</span></span><br><span class="line"><span class="string">+--[ RSA 2048]----+</span></span><br><span class="line"><span class="string">|        ..oooE.++|</span></span><br><span class="line"><span class="string">|         o. o..  |</span></span><br><span class="line"><span class="string">|          ..   . |</span></span><br><span class="line"><span class="string">|         o  . . o|</span></span><br><span class="line"><span class="string">|        S .  . + |</span></span><br><span class="line"><span class="string">|       . .    . o|</span></span><br><span class="line"><span class="string">|      . o o    ..|</span></span><br><span class="line"><span class="string">|       + +       |</span></span><br><span class="line"><span class="string">|        +.       |</span></span><br><span class="line"><span class="string">+-----------------+</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>Create .ssh Directory on host server</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">[neil@yimincai.net ~]$ ssh alyssa@192.168.50.6 mkdir -p .ssh</span><br><span class="line"></span><br><span class="line">The authenticity of host <span class="string">'192.168.50.6 (192.168.50.6)'</span> can<span class="string">'t be established.</span></span><br><span class="line"><span class="string">RSA key fingerprint is 48:0e:28:11:d6:81:68:16:04:5f:db:49:02:la:12:4e.</span></span><br><span class="line"><span class="string">Are you sure you want to continue connecting (yes/no)? yes</span></span><br><span class="line"><span class="string">Warning: Permanently added '</span>192.168.50.6<span class="string">' (ECDSA) to the list of known hosts.</span></span><br><span class="line"><span class="string">alyssa@192.168.50.6'</span>s password: [Enter Your Password Here]</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Copy public key to host server</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">cat ~/.ssh/id_rsa.pub | ssh alyssa@192.168.50.6 <span class="string">'cat &gt;&gt; .ssh/authorized_keys'</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p> 重新啟動ssh服務</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">service ssh restatus</span><br></pre></td></tr></tbody></table></figure>
+
+<p>確認ssh服務狀況</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">service ssh status</span><br></pre></td></tr></tbody></table></figure>
+
+<p>防火牆設定允許ssh服務</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo ufw allow ssh</span><br><span class="line"><span class="comment"># or</span></span><br><span class="line">sudo ufw allow 22</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="設定Python環境"><a href="#設定Python環境" class="headerlink" title="設定Python環境"></a>設定Python環境</h1><h2 id="1-使用Python3"><a href="#1-使用Python3" class="headerlink" title="1. 使用Python3"></a>1. 使用Python3</h2><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo apt-get install python3-venv</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="建立Python3虛擬環境"><a href="#建立Python3虛擬環境" class="headerlink" title="建立Python3虛擬環境"></a>建立Python3虛擬環境</h2><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># 在當前資料夾建立環境</span></span><br><span class="line">python3 -m venv &lt;venvName&gt;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>啟動環境</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> ./&lt;venvName&gt;/bin/activate</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="2-使用Conda作為Python環境"><a href="#2-使用Conda作為Python環境" class="headerlink" title="2. 使用Conda作為Python環境"></a>2. 使用Conda作為Python環境</h2><h2 id="Option-移除Python-3-6"><a href="#Option-移除Python-3-6" class="headerlink" title="(Option)移除Python 3.6"></a>(Option)移除Python 3.6</h2><p><span class="github-emoji" style="color: transparent;background:no-repeat url(https://github.githubassets.com/images/icons/emoji/unicode/26a0.png?v8) center/contain" data-src="https://github.githubassets.com/images/icons/emoji/unicode/26a0.png?v8">⚠</span> 不要輕易移除，曾試過移除後GUI失效</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo apt-get remove python3.6</span><br></pre></td></tr></tbody></table></figure>
+
+<p>移除Python 3.4及其dependent</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo apt-get remove --auto-remove python3.6</span><br></pre></td></tr></tbody></table></figure>
+
+<p>清除Python 3.4</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo apt-get purge python3.4</span><br><span class="line"><span class="comment"># or</span></span><br><span class="line">sudo apt-get purge --auto-remove python3.6</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="安裝-Conda-for-Python-3-7-64bit"><a href="#安裝-Conda-for-Python-3-7-64bit" class="headerlink" title="安裝 Conda for Python 3.7 64bit"></a>安裝 Conda for Python 3.7 64bit</h2><p>可以到Conda Docs頁面確認下載版本或使用下方範例(Python 3.7)</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/Download</span><br><span class="line">wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fbuilding-machine-learning-env-on-ubuntu18.04%2Fwget-miniconda.png?alt=media&amp;token=8b77e846-19c2-4813-803c-eee00ad197ac" alt="wget-miniconda"></p>
+<p>更改檔案權限</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo chmod +x ./Miniconda3-latest-Linux-x86_64.sh</span><br></pre></td></tr></tbody></table></figure>
+
+<p>安裝</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">./Miniconda3-latest-Linux-x86_64.sh</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fbuilding-machine-learning-env-on-ubuntu18.04%2Finstall-miniconda.png?alt=media&amp;token=40d7b72f-0cb6-4495-bdf6-02117d85cd62" alt="install-miniconda"></p>
+<p>同意license terms</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fbuilding-machine-learning-env-on-ubuntu18.04%2Fagree-license-terms.png?alt=media&amp;token=6d4ad8ea-92b8-4ec6-a087-9f3afa7294c3" alt="agree-license-terms"></p>
+<p>Hit Enter</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fbuilding-machine-learning-env-on-ubuntu18.04%2Fconti-install-conda.png?alt=media&amp;token=8520e198-43a6-434d-b497-a36cfc50da21" alt="conti-install-conda"></p>
+<p>Type “yes”</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fbuilding-machine-learning-env-on-ubuntu18.04%2Frun-conda-init.png?alt=media&amp;token=52afa2c7-4936-4d7f-a7f7-7f6c22e52146" alt="run-conda-init"></p>
+<p>重啟Terminal、測試command</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">conda info</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fbuilding-machine-learning-env-on-ubuntu18.04%2Fconda-info.png?alt=media&amp;token=6a57f8d9-f8c9-4e23-b6ff-5f51671bf814" alt="conda-info"></p>
+<h1 id="建立Conda-venv（虛擬環境）"><a href="#建立Conda-venv（虛擬環境）" class="headerlink" title="建立Conda venv（虛擬環境）"></a>建立Conda venv（虛擬環境）</h1><p>確認安裝了多少個虛擬環境</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">conda env list</span><br></pre></td></tr></tbody></table></figure>
+
+<p>假設建一個名為 <code>ml</code>  的 venv 並設定Python 為3.6</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">conda create --name ml python=3.6</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Press <code>y</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fbuilding-machine-learning-env-on-ubuntu18.04%2Fcreate-venv-y.png?alt=media&amp;token=38b2dd0f-f86e-4fee-b45e-9bcbd939323a" alt="create-venv-y"></p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># To activate this environment, use</span></span><br><span class="line">conda activate ml</span><br><span class="line"><span class="comment"># To deactivate an active environment, use</span></span><br><span class="line">conda deactivate</span><br></pre></td></tr></tbody></table></figure>
+
+<p>刪除虛擬環境或package</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">conda remove --name ml numpy</span><br></pre></td></tr></tbody></table></figure>
+
+<p>刪除虛擬環境</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">conda env remove --name myenv</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="安裝-Machine-Learning-相關環境"><a href="#安裝-Machine-Learning-相關環境" class="headerlink" title="安裝 Machine Learning 相關環境"></a>安裝 Machine Learning 相關環境</h1><p>安裝常用環境，可參考下方文章</p>
+<ul>
+<li><a href="https://yimincai.net/2020/tensorflow-corresponding-to-keras-version">Tensorflow與Keras版本對應</a></li>
+</ul>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">pip install numpy</span><br><span class="line">pip install pandas</span><br><span class="line">pip install scikit-learn</span><br><span class="line">pip install --upgrade tensorflow</span><br><span class="line">pip install Keras</span><br><span class="line">pip install Pillow</span><br></pre></td></tr></tbody></table></figure>
+
+<p>⚠ 若在 <code>import tensorflow as tf</code> 時出現： <code>Illegal instruction (core dumped)</code>經確認是CPU缺少avx指令集的關係（CPU架構太舊不支援）。</p>
+<p>可降低Tensorflow版本解決</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">pip3 uninstall tensorflow</span><br><span class="line"><span class="comment"># and then</span></span><br><span class="line">pip3 install tensorflow==1.4</span><br></pre></td></tr></tbody></table></figure>
+
+<p><mark>Continue .. </mark></p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Machine Learning</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Ubuntu</tag>
+        <tag>Machine Learning</tag>
+        <tag>Openssh server</tag>
+        <tag>Python venv</tag>
+        <tag>Conda venv</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>部署Hexo+Next於Github-Page+ssl憑證+自定義Domain</title>
+    <url>/2020/deploy-hexo-and-next-on-github-with-ssl-domain/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>Hexo 是一款靜態網頁產生器，它是基於 Node.js 的快速且簡單的網頁框架被許多 Bloger 使用，因為是靜態網頁，它沒有我們常見的資料庫等後端系統，Blog 常用的留言板等功能則透過 third-party plugin 解決。</p>
+<a id="more"></a>
+
+<h1 id="環境需求"><a href="#環境需求" class="headerlink" title="環境需求"></a>環境需求</h1><ul>
+<li>安裝 <a href="https://nodejs.org/en/" target="_blank" rel="noopener">Node.js</a></li>
+<li>安裝 <a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a></li>
+</ul>
+<h1 id="安裝Hexo"><a href="#安裝Hexo" class="headerlink" title="安裝Hexo"></a>安裝Hexo</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></tbody></table></figure>
+
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fdeploy-hexo-and-next-on-github-with-ssl-domain%2Finstall-hexo-cli.png?alt=media&amp;token=d273ad5d-30f9-4712-80d4-86fa2093df65" alt="install-hexo-cli"></p>
+<h1 id="使用-Hexo"><a href="#使用-Hexo" class="headerlink" title="使用 Hexo"></a>使用 Hexo</h1><p>安裝完Hexo 後需要在指定資料夾 <code>&lt;dir&gt;</code>  中新建所需要的的檔案。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># 建立 Project 資料夾</span></span><br><span class="line">$ mkdir &lt;dir-name&gt;</span><br><span class="line"><span class="comment"># 資料夾初始化</span></span><br><span class="line">$ hexo init &lt;dir&gt;</span><br><span class="line">$ <span class="built_in">cd</span> &lt;dir&gt;</span><br><span class="line"><span class="comment"># 安裝</span></span><br><span class="line">$ npm install</span><br></pre></td></tr></tbody></table></figure>
+
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fdeploy-hexo-and-next-on-github-with-ssl-domain%2Fhexo-init.png?alt=media&amp;token=85a430dd-1eef-4de5-9dbc-a8d1a5732685" alt="hexo-init"></p>
+<p>Project tree：</p>
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fdeploy-hexo-and-next-on-github-with-ssl-domain%2Fhexo-project-tree.png?alt=media&amp;token=31e937c9-8396-4488-ae75-11b745ee271f" alt="hexo-project-tree"></p>
+<p><mark>Continue ..</mark></p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Web</tag>
+        <tag>SSL</tag>
+        <tag>Hexo</tag>
+        <tag>custom domain</tag>
+        <tag>Github page</tag>
+        <tag>next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker架設郵件伺服器</title>
+    <url>/2020/deploy-mail-server-on-docker/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>今天我們使用<a href="https://github.com/tomav/docker-mailserver" target="_blank" rel="noopener">tomav/docker-mailserver</a>所提供的Docker Image來快速的架設一個簡單的Mail Server。</p>
+<a id="more"></a>
+
+<h1 id="基礎知識"><a href="#基礎知識" class="headerlink" title="基礎知識"></a>基礎知識</h1><p><strong>常見的郵局埠與通訊協議</strong></p>
+<p>發郵件的協議有SMTP，收郵件的協議有POP3和IMAP。</p>
+<ul>
+<li><strong>SMTP</strong>：明文使用25埠。加密後使用25/587/465埠。</li>
+<li><strong>IMAP</strong>：明文使用143埠。加密後使用143/993埠。</li>
+<li>POP3：明文使用110埠。加密後使用110/995埠。</li>
+</ul>
+<p>這次使用的Docker映像檔為：tvial/docker-mailserver</p>
+<ul>
+<li>參考連結<ul>
+<li><a href="https://github.com/tomav/docker-mailserver" target="_blank" rel="noopener">Github tvail/docker-mailserver</a></li>
+<li><a href="https://github.com/tomav/docker-mailserver/wiki/Setup-docker-mailserver-using-the-script-setup.sh" target="_blank" rel="noopener">Install example</a></li>
+<li><a href="https://github.com/tomav/docker-mailserver/wiki" target="_blank" rel="noopener">docker-mailserver Github Wiki</a></li>
+<li><a href="https://www.itmanbu.com/docker-mail-server.html" target="_blank" rel="noopener">利用Docker自建多功能加密邮件服务器</a></li>
+</ul>
+</li>
+</ul>
+<p>確保您有安裝<a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a>、<a href="https://docs.docker.com/compose/install/" target="_blank" rel="noopener">Docker-Compose</a> 1.7 or higher</p>
+<p><strong>本服務所使用的連接埠：</strong></p>
+<h4 id="Exposed-ports"><a href="#Exposed-ports" class="headerlink" title="Exposed ports"></a>Exposed ports</h4><ul>
+<li>25 receiving email from other mailservers</li>
+<li>465 SSL Client email submission</li>
+<li>587 TLS Client email submission</li>
+<li>143 StartTLS IMAP client</li>
+<li>993 TLS/SSL IMAP client</li>
+<li>110 POP3 client</li>
+<li>995 TLS/SSL POP3 client</li>
+</ul>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Note: Port 25 is only for receiving email from other mailservers and not for submitting email. You need to use port 465 or 587 for this.</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h1><ol>
+<li><strong>從Docker Hub pull 映像檔</strong></li>
+</ol>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ docker pull tvial/docker-mailserver:latest</span><br></pre></td></tr></tbody></table></figure>
+
+<ol start="2">
+<li>*<em>Get tools, docker-compose.yml, the .env and the setup.sh files: *</em></li>
+</ol>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ curl -o setup.sh https://raw.githubusercontent.com/tomav/docker-mailserver/master/setup.sh</span><br><span class="line"></span><br><span class="line">$ chmod a+x ./setup.sh</span><br><span class="line"></span><br><span class="line">$ curl -o docker-compose.yml https://raw.githubusercontent.com/tomav/docker-mailserver/master/docker-compose.yml.dist</span><br><span class="line"></span><br><span class="line">$ curl -o .env https://raw.githubusercontent.com/tomav/docker-mailserver/master/.env.dist</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong><em>Note</em></strong>:在這裡我找到一個問題，docker-compose.yml 檔案中第20行引入了”env-mailserver”，但在作者的README.MD、參數說明文件中並未找到此檔案說明。</p>
+<p>下載來的 docker-compose.yml：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">version: <span class="string">'2'</span></span><br><span class="line">services:</span><br><span class="line">  mail:</span><br><span class="line">    image: tvial/docker-mailserver:latest</span><br><span class="line">    hostname: <span class="variable">${HOSTNAME}</span></span><br><span class="line">    domainname: <span class="variable">${DOMAINNAME}</span></span><br><span class="line">    container_name: <span class="variable">${CONTAINER_NAME}</span></span><br><span class="line">    ports:</span><br><span class="line">    - <span class="string">"25:25"</span></span><br><span class="line">    - <span class="string">"143:143"</span></span><br><span class="line">    - <span class="string">"587:587"</span></span><br><span class="line">    - <span class="string">"993:993"</span></span><br><span class="line">    volumes:</span><br><span class="line">    - maildata:/var/mail</span><br><span class="line">    - mailstate:/var/mail-state</span><br><span class="line">    - maillogs:/var/<span class="built_in">log</span>/mail</span><br><span class="line">    - ./config/:/tmp/docker-mailserver/</span><br><span class="line">    env_file:</span><br><span class="line">    - .env</span><br><span class="line">    - env-mailserver</span><br><span class="line">    cap_add:</span><br><span class="line">    - NET_ADMIN</span><br><span class="line">    - SYS_PTRACE</span><br><span class="line">    restart: always</span><br><span class="line">volumes:</span><br><span class="line">  maildata:</span><br><span class="line">    driver: <span class="built_in">local</span></span><br><span class="line">  mailstate:</span><br><span class="line">    driver: <span class="built_in">local</span></span><br><span class="line">  maillogs:</span><br><span class="line">    driver: <span class="built_in">local</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>修改後的 docker-compose.yml：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">version: <span class="string">'2'</span></span><br><span class="line"></span><br><span class="line">services:</span><br><span class="line">  mail:</span><br><span class="line">    image: tvial/docker-mailserver:latest</span><br><span class="line">    hostname: mail</span><br><span class="line">    domainname: mail.nemu.edu.tw</span><br><span class="line">    container_name: mail</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"25:25"</span></span><br><span class="line">      - <span class="string">"143:143"</span></span><br><span class="line">      - <span class="string">"587:587"</span></span><br><span class="line">      - <span class="string">"993:993"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /home/mail:/var/mail</span><br><span class="line">      - /home/mail-state:/var/mail-state</span><br><span class="line">      - /root/config/:/tmp/docker-mailserver/</span><br><span class="line">      - /etc/letsencrypt:/etc/letsencrypt</span><br><span class="line">    environment:</span><br><span class="line">      - ENABLE_SPAMASSASSIN=0</span><br><span class="line">      - ENABLE_CLAMAV=0</span><br><span class="line">      - ENABLE_FAIL2BAN=1</span><br><span class="line">      - ONE_DIR=1</span><br><span class="line">      - DMS_DEBUG=0</span><br><span class="line">      - SSL_TYPE=letsencrypt</span><br><span class="line">    cap_add:</span><br><span class="line">      - NET_ADMIN</span><br></pre></td></tr></tbody></table></figure>
+
+<p>請注意修改後文件的6、7行，hostname+domainname=完整域名，另外，在本次修改的設定檔中，將兩個服務關閉了，分別是ENABLE_SPAMASSASSIN、ENABLE_CLAMAV，</p>
+<h1 id="Add-mail-server-user-accont"><a href="#Add-mail-server-user-accont" class="headerlink" title="Add mail server user accont"></a>Add mail server user accont</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ mkdir -p /root/config</span><br><span class="line">$ touch /root/config/postfix-accounts.cf</span><br><span class="line">$ docker run --rm \</span><br><span class="line"> -e MAIL_USER=apple@app.nemu.edu.tw \</span><br><span class="line"> -e MAIL_PASS=123456 \</span><br><span class="line"> -ti tvial/docker-mailserver:latest \</span><br><span class="line"> /bin/sh -c <span class="string">'echo "$MAIL_USER|$(doveadm pw -s SHA512-CRYPT -u $MAIL_USER -p $MAIL_PASS)"'</span> &gt;&gt; /root/config/postfix-accounts.cf</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="建立DKIM-Key"><a href="#建立DKIM-Key" class="headerlink" title="建立DKIM Key"></a>建立DKIM Key</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ docker run --rm \</span><br><span class="line"> -v <span class="string">"/root/config"</span>:/tmp/docker-mailserver \</span><br><span class="line"> -ti tvial/docker-mailserver:latest generate-dkim-config</span><br></pre></td></tr></tbody></table></figure>
+
+<p>執行完之後查看/root/config/opendkim/keys/<strong>mail.nemu.edu.tw</strong>/mail.txt的內容就是我們要設定的dns解析。我的內容是：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ cat /root/config/opendkim/keys/mail.nemu.edu.tw/mail.txt</span><br><span class="line">mail._domainkey IN TXT ( <span class="string">"v=DKIM1; k=rsa; "</span></span><br><span class="line"><span class="string">"p=MIGfMA0GCSqGSIb3DPENNNNNNNNNNCBiQKBgQCy9JV3FnXjLjsRJs/N0fy1C233333IV7t3f7fWpv/lo4NsoPEtG693hTgApkhuLl9KeV233333DMTagtXN898lXenKFEIS4COi7X/RjbGuOoApg4qS23333333TfXsrjN3xVC78E9T/HrS6pJN5fX+1s+1s+1s+1s+1s+1sIDAQAB"</span> ) ; ----- DKIM key mail <span class="keyword">for</span> mail.nemu.edu.tw</span><br></pre></td></tr></tbody></table></figure>
+
+<p>因為是自己搭建的bind直接把這段複製到OS裡的hosts檔案內就行了，如下圖直接貼上儲存。</p>
+<p>Ex. MacOS、Linux的檔案位置如下：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># MacOS:</span></span><br><span class="line">/private⁩/⁨etc⁩/hosts</span><br><span class="line"><span class="comment"># Linux(CentOS 7):</span></span><br><span class="line">/etc/hosts</span><br></pre></td></tr></tbody></table></figure>
+
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fdeploy-mail-server-on-docker%2Fbind-rsa-in-hosts.png?alt=media&amp;token=2cbd7878-457a-4b03-944c-e0255bc246b9" alt="bind-rsa-in-hosts"></p>
+<h1 id="建立SSL"><a href="#建立SSL" class="headerlink" title="建立SSL"></a>建立SSL</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> ~/mail/docker-mailserver/</span><br><span class="line">$ ./setup.sh config ssl</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h1 id="啟動Docker容器"><a href="#啟動Docker容器" class="headerlink" title="啟動Docker容器"></a>啟動Docker容器</h1><p>確認防火牆有開啟郵件伺服器所需的通訊埠號，在CentOS中使用firewalld作為預設防火牆。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># 確認目前設定</span></span><br><span class="line">$ firewall-cmd --list-all</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加入自行指定的連接埠</span></span><br><span class="line">$ firewall-cmd --add-port=25/tcp --permanent</span><br><span class="line">$ firewall-cmd --add-port=143/tcp --permanent</span><br><span class="line">$ firewall-cmd --add-port=465/tcp --permanent</span><br><span class="line">$ firewall-cmd --add-port=587/tcp --permanent</span><br><span class="line">$ firewall-cmd --add-port=993/tcp --permanent</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重新載入設定</span></span><br><span class="line">$ firewall-cmd --reload</span><br><span class="line"></span><br><span class="line"><span class="comment">### 關閉防火牆服務(optional)</span></span><br><span class="line">$ systemctl stop firewall</span><br><span class="line">$ systemctl <span class="built_in">disable</span> firewall</span><br></pre></td></tr></tbody></table></figure>
+
+<p>啟動Docker容器</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># 背景執行</span></span><br><span class="line">$ docker-compose up -d mail</span><br></pre></td></tr></tbody></table></figure>
+
+<p>or</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># view process</span></span><br><span class="line">$ docker-compose up mail</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="測試SSL設定是否成功"><a href="#測試SSL設定是否成功" class="headerlink" title="測試SSL設定是否成功"></a><strong>測試SSL設定是否成功</strong></h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ docker <span class="built_in">exec</span> mail openssl s_client -connect 0.0.0.0:587 -starttls smtp -CApath /etc/letsencrypt/</span><br></pre></td></tr></tbody></table></figure>
+
+<p>和</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ docker <span class="built_in">exec</span> mail openssl s_client -connect 0.0.0.0:993 -starttls imap -CApath /etc/letsencrypt/</span><br></pre></td></tr></tbody></table></figure>
+
+<p>若能看到以下結果，代表成功了。</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Ｖerify return code: 0 (ok)</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="Client端連線設定"><a href="#Client端連線設定" class="headerlink" title="Client端連線設定"></a><strong>Client端連線設定</strong></h1><p>收信：</p>
+<ul>
+<li>Server domain name：mail.nemu.edu.tw</li>
+<li>Protocol：IMAP</li>
+<li>Port：993</li>
+<li>Use SSL：是</li>
+</ul>
+<p>發信：</p>
+<ul>
+<li>Server domain name：mail.nemu.edu.tw</li>
+<li>Protocol：SMTP</li>
+<li>Port：587</li>
+<li>Use SSL：是</li>
+</ul>
+<!-- 目前已新增兩個使用者：
+
+- Neil
+  - User Name：neil@mail.nemu.edu.tw
+  - Password：123456
+
+- Edward
+  - User Name：edward@mail.nemu.edu.tw
+  - Password：123456 -->
+
+<h1 id="測試結果"><a href="#測試結果" class="headerlink" title="測試結果"></a><strong>測試結果</strong></h1><!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fdeploy-mail-server-on-docker%2Ftest-result.jpg?alt=media&amp;token=05511f6c-9d7f-4535-8f97-3561027b599c" alt="test-result"></p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Docker</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+        <tag>Docker Compose</tag>
+        <tag>Mail Server</tag>
+        <tag>SMTP</tag>
+        <tag>IMAP</tag>
+        <tag>POP3</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>macOS安裝與移除NVM</title>
+    <url>/2020/install-and-uninstall-nvm-on-macos/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>NVM（Node Version Manager），是一款Node.js的管理套件，可以透過NVM管理不同的Node.js版本，也可以隨時切換到其它版本。</p>
+<a id="more"></a>
+
+<h1 id="安裝NVM"><a href="#安裝NVM" class="headerlink" title="安裝NVM"></a>安裝NVM</h1><p>NVM官方建議直接使用cURL安裝或更新 <code>nvm</code>，雖說在macOS環境下一般都建議使用Homebrew來安裝，但安裝完後會有許多坑，因此我們就照官方建議來做吧！</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash</span><br></pre></td></tr></tbody></table></figure>
+
+<p>結果如下：</p>
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-and-uninstall-nvm-on-macos%2Finstall-nvm.png?alt=media&amp;token=093fbf27-7a3e-4048-a859-7a4cfcc461c0" alt="install-nvm"></p>
+<p>上面指令會將 <code>nvm</code> 的repository複製到 <code>~/.nvm</code> ，然後把source line加進你的 profile ( <code>~/.bash_profile</code> , <code>~/.zshrc</code> , <code>~/.profile</code> , or <code>~/.bashrc</code> )，之中；以我的例子會寫到 <code>~/.zshrc</code> 中，我們可以使用 <code>vim</code> 打開來看看：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> NVM_DIR=<span class="string">"<span class="variable">$HOME</span>/.nvm"</span></span><br><span class="line">[ -s <span class="string">"<span class="variable">$NVM_DIR</span>/nvm.sh"</span> ] &amp;&amp; \. <span class="string">"<span class="variable">$NVM_DIR</span>/nvm.sh"</span>  <span class="comment"># This loads nvm</span></span><br><span class="line">[ -s <span class="string">"<span class="variable">$NVM_DIR</span>/bash_completion"</span> ] &amp;&amp; \. <span class="string">"<span class="variable">$NVM_DIR</span>/bash_completion"</span>  <span class="comment"># This loads nvm bash</span></span><br></pre></td></tr></tbody></table></figure>
+
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-and-uninstall-nvm-on-macos%2Fnvm-zshrc.png?alt=media&amp;token=f3d37519-0597-44a1-b209-9ee6e5ac77ac" alt="nvm-zshrc"></p>
+<p>完成以後，我們重新載入 <code>~/.zshrc</code> 看看 <code>nvm</code> 這個指令能不能用，顯示如下圖就代表安裝完成啦！</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">nvm --verison</span><br></pre></td></tr></tbody></table></figure>
+
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-and-uninstall-nvm-on-macos%2Fnvm-version.png?alt=media&amp;token=1b0525db-0dd1-44ce-a43a-44cf1c617553" alt="nvm-version"></p>
+<h1 id="NVM-指令"><a href="#NVM-指令" class="headerlink" title="NVM 指令"></a>NVM 指令</h1><p>查看有哪些 Node.js 版本可以安裝：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">nvm ls-remote</span><br></pre></td></tr></tbody></table></figure>
+
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-and-uninstall-nvm-on-macos%2Fnvm-ls-remote.png?alt=media&amp;token=6ba4fb03-bb15-47c2-a42f-f34eea9f3776" alt="nvm-ls-remote"></p>
+<p>也可以帶入<version>參數篩選：</version></p>
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-and-uninstall-nvm-on-macos%2Fnvm-ls-remote-13.png?alt=media&amp;token=8c71eb5f-877e-4dbe-a3e7-7c3d04081e94" alt="nvm-ls-remote-13"></p>
+<p>列出本機安裝的資訊，可以看到我們都還沒安裝：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">nvm ls</span><br></pre></td></tr></tbody></table></figure>
+
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-and-uninstall-nvm-on-macos%2Fnvm-ls.png?alt=media&amp;token=c24fe498-8688-4c8f-94b7-5c3306be50b8" alt="nvm-ls"></p>
+<h1 id="安裝需要的-Node-js-版本"><a href="#安裝需要的-Node-js-版本" class="headerlink" title="安裝需要的 Node.js 版本"></a>安裝需要的 Node.js 版本</h1><p>安裝 13.13.0</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">nvm install 13.13.0</span><br></pre></td></tr></tbody></table></figure>
+<p>使用 13.13.0</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">nvm use 13.13.0</span><br></pre></td></tr></tbody></table></figure>
+
+<p>這樣就會安裝並使用 <code>13.13.0</code> 的 Node.js。</p>
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-and-uninstall-nvm-on-macos%2Fnvm-install-13-13-0.png?alt=media&amp;token=b88a48f8-075c-40e3-91fd-02aff9f4bb65" alt="nvm-install-13-13-0"></p>
+<h1 id="設定預設Node-js版本"><a href="#設定預設Node-js版本" class="headerlink" title="設定預設Node.js版本"></a>設定預設Node.js版本</h1><p>經過上面的設定後每次重新開啟Terminal，Node.js的設定還是會被重置，因此需要設定預設使用版本：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">nvm <span class="built_in">alias</span> default 13.13.0</span><br></pre></td></tr></tbody></table></figure>
+
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-and-uninstall-nvm-on-macos%2Fnvm-alias-default.png?alt=media&amp;token=b77db37b-0e3f-4420-af74-b4443ea6b650" alt="nvm-alias-default"></p>
+<p>之後每次開啟都會使用 <code>13.13.0</code></p>
+<h1 id="NVM-指令整理"><a href="#NVM-指令整理" class="headerlink" title="NVM 指令整理"></a>NVM 指令整理</h1><ul>
+<li><code>nvm --version</code> ：檢查 <code>nvm</code> 是否安裝成功，如果是會輸出版本號</li>
+<li><code>nvm ls-remote</code> ：查看目前可安裝版本</li>
+<li><code>nvm ls-remote &lt;version&gt;</code>：篩選版本號</li>
+<li><code>nvm install &lt;version&gt;</code> ：安裝指定版本</li>
+<li><code>nvm ls</code> ：查看本機目前安裝的版本</li>
+<li><code>nvm use &lt;version&gt;</code> ：切換版本，但重啟Terminal會重置設定</li>
+<li><code>nvm alias default &lt;version&gt;</code> ：設定每次開啟Terminal使用的Node.js版本</li>
+<li><code>nvm -h</code> ：列出所有指令選項</li>
+</ul>
+<h1 id="移除透過cURL安裝的NVM"><a href="#移除透過cURL安裝的NVM" class="headerlink" title="移除透過cURL安裝的NVM"></a>移除透過cURL安裝的NVM</h1><p>刪除相關目錄：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">rm -rf ~/.nvm</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">rm -rf ~/.npm</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">rm -rf ~/.bower</span><br></pre></td></tr></tbody></table></figure>
+
+<p>移除<code>~/.zshrc</code>內的<code>nvm</code>設定：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">vim ~/.zshrc</span><br></pre></td></tr></tbody></table></figure>
+<p>刪除以下內容：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> NVM_DIR=<span class="string">"<span class="variable">$HOME</span>/.nvm"</span></span><br><span class="line">[ -s <span class="string">"<span class="variable">$NVM_DIR</span>/nvm.sh"</span> ] &amp;&amp; \. <span class="string">"<span class="variable">$NVM_DIR</span>/nvm.sh"</span>  <span class="comment"># This loads nvm</span></span><br><span class="line">[ -s <span class="string">"<span class="variable">$NVM_DIR</span>/bash_completion"</span> ] &amp;&amp; \. <span class="string">"<span class="variable">$NVM_DIR</span>/bash_completion"</span>  <span class="comment"># This loads nvm bash</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>重啟 terminal，查詢以下指令，應該都沒有東西了：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">nvm</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">node</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">npm</span><br></pre></td></tr></tbody></table></figure>
+
+
+<h1 id="移除透過Homebrew安裝的NVM"><a href="#移除透過Homebrew安裝的NVM" class="headerlink" title="移除透過Homebrew安裝的NVM"></a>移除透過Homebrew安裝的NVM</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">brew uninstall node</span><br></pre></td></tr></tbody></table></figure>
+
+<p>一般來說Homebrew 的 <code>node</code> 套件會預設裝在 <code>/usr/local/bin</code> ，移除以下目錄：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">rm -rf /usr/<span class="built_in">local</span>/bin/node</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">rm -rf /usr/<span class="built_in">local</span>/bin/npm</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">rm -rf /usr/<span class="built_in">local</span>/bin/node_modules</span><br></pre></td></tr></tbody></table></figure>
+
+<p>確認是否完整移除：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">which</span> node</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h1><ul>
+<li><a href="https://nodejs.org/en/" target="_blank" rel="noopener">Node.js</a></li>
+<li><a href="https://github.com/creationix/nvm" target="_blank" rel="noopener">NVM GitHub</a></li>
+<li><a href="https://medium.com/@toumasaya/node-js-環境設定-for-mac-a2628836feaf" target="_blank" rel="noopener">Node.js 環境設定-for mac</a></li>
+</ul>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Node.js</category>
+      </categories>
+      <tags>
+        <tag>NVM</tag>
+        <tag>Node.js</tag>
+        <tag>macOS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Install ESXi VMware-tools on Linux</title>
+    <url>/2020/install-esxi-vmware-tools-on-linux/</url>
+    <content><![CDATA[<h1 id="Install-ESXi-vmware-tools-on-Linux"><a href="#Install-ESXi-vmware-tools-on-Linux" class="headerlink" title="Install ESXi vmware-tools on Linux"></a>Install ESXi vmware-tools on Linux</h1><p>Visit vCenter web page choose the VM, click <code>Install VMware-tools</code> and MOUNT.</p>
+<a id="more"></a>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-esxi-vmware-tools-on-linux%2Fmount-vmware-tools-cd.png?alt=media&amp;token=4678933e-d0bc-4591-b13e-ce45ac59c87b" alt="mount-vmware-tools-cd"></p>
+<p>Back to VM double click VMware Tools on desktop</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-esxi-vmware-tools-on-linux%2Fclick-dvd-on-desktop.png?alt=media&amp;token=80d2bb24-d3da-4c1d-9c56-377e0100221b" alt="click-dvd-on-desktop"></p>
+<p>And double click <code>VMwareTools-&lt;version&gt;.tar.gz</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-esxi-vmware-tools-on-linux%2Fclick-tar-gz-file.png?alt=media&amp;token=a2cd2bf8-4981-48ad-906d-c918fd60edd2" alt="click-tar-gz-file"></p>
+<p>Extract it on <code>~/Desktop</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-esxi-vmware-tools-on-linux%2Fextract-to-desktop.png?alt=media&amp;token=2417f7ef-8a29-49c9-8a3c-8aae1c111939" alt="extract-to-desktop"></p>
+<p>In the dir right click and choose <code>Open in Terminal</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-esxi-vmware-tools-on-linux%2Fopen-dir-in-terminal.png?alt=media&amp;token=ba0a4b82-0698-447d-b0b3-fe00539bf8b1" alt="open-dir-in-terminal"></p>
+<p>Change file permission to install it</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo chmod u+x vmware-install.pl</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-esxi-vmware-tools-on-linux%2Fchange-install-file-permission.png?alt=media&amp;token=cfa302ca-5fa3-4f02-8fee-042b3832e9d5" alt="change-install-file-permission"></p>
+<p>Install it</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo ./vmware-install.pl</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Just type <code>yes</code> and press <code>Enter</code> to the end of installation, enjoy</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-esxi-vmware-tools-on-linux%2Fdone-enjoy.png?alt=media&amp;token=cdfb5470-0691-4b44-8da8-eb5488e4fec6" alt="done-enjoy"></p>
+<h1 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h1><ul>
+<li><a href="https://www.vmware.com/support/ws5/doc/ws_newguest_tools_linux.html" target="_blank" rel="noopener">VMware Workstation 5.0</a></li>
+</ul>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>ESXi</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Ubuntu</tag>
+        <tag>ESXi</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Windows 10 建立 Machine Learning 開發環境</title>
+    <url>/2020/install-machine-learning-environment-in-windows-10/</url>
+    <content><![CDATA[<h1 id="安裝Python環境（Miniconda）"><a href="#安裝Python環境（Miniconda）" class="headerlink" title="安裝Python環境（Miniconda）"></a>安裝Python環境（Miniconda）</h1><p>開啟Chrome (or any others browsers) 下載 <a href="https://docs.conda.io/en/latest/index.html" target="_blank" rel="noopener">Miniconda</a>。Miniconda 是 <a href="https://www.anaconda.com/" target="_blank" rel="noopener">Anaconda</a> 的輕量版本，使用它是為了彈性調整 <a href="https://www.python.org/" target="_blank" rel="noopener">Python</a> 環境，開發人員常常會有Python pip/pip3 被自己搞壞的經驗。使用它可以重複的建立、切換、自定義 Python 環境，若環境損壞只需要在建立一個虛擬環境即可！</p>
+<a id="more"></a>
+
+<p>首先，開啟Miniconda的<a href="https://www.notion.so/yimincai/Windows-Machine-Learning-d29eb73a4d26400ab8dabdd7f56fe202" target="_blank" rel="noopener">下載頁面</a></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fdocs-conda-io.png?alt=media&amp;token=8142b31a-4550-42ba-a848-825b5d259561" alt="docs-conda-io"></p>
+<p>選擇下載64位元的Miniconda(Python 3.7)版本</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fdownload-conda.png?alt=media&amp;token=b6757c26-bfce-414f-8f1b-9ea6aaa2deba" alt="download-conda"></p>
+<p>安裝Miniconda它，點選『Next』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Finstall-conda-next.png?alt=media&amp;token=1ba09768-ef1d-4422-af76-9fa2e58162b2" alt="install-conda-next"></p>
+<p>同意 User License Agreement，點選『I Agree』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Finstall-conda-i-agree.png?alt=media&amp;token=b8f63fa6-4c7b-4c94-9605-e7a38da7af3b" alt="install-conda-i-agree"></p>
+<p>選擇『Just Me』、『Next』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Finstall-conda-just-me.png?alt=media&amp;token=c9d309da-889d-4680-82a6-65c2022ead4d" alt="install-conda-just-me"></p>
+<p>選擇安裝位置，這邊我採用預設值，也可以依個人習慣點選『Browse .. 』選擇其它安裝位置，『下一步』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Finstall-conda-destination-folder.png?alt=media&amp;token=2e3e7311-a338-402e-98ea-c21755da76ff" alt="install-conda-destination-folder"></p>
+<p>將兩個選項都勾選起來，預設中只勾選了下方的『Register Miniconda3 as my default Python 3.7』，勾選『Add Miniconda3 to my PATH environment variable』是為了讓使用者可以在Command Line 中使用Conda 函數，<strong>在後續建立 Python 虛擬環境時會用到</strong>，所以我們將它勾選起來</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Finstall-conda-add-to-path.png?alt=media&amp;token=70189f02-dbf6-4a6a-af02-2d25c5d391c0" alt="install-conda-add-to-path"></p>
+<p>等待安裝完成 .. 安裝完成後選擇『Next』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Finstall-conda-complete.png?alt=media&amp;token=33f45798-45c2-4e33-9aa1-d64cf1f85973" alt="install-conda-complete"></p>
+<p>這樣就安裝完成了，按下『Finish』吧！如果對使用文件有興趣也可以閱讀一下哦！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Finstall-conda-finish.png?alt=media&amp;token=b286c4de-76d0-42ab-a603-6a776811aeaf" alt="install-conda-finish"></p>
+<h1 id="建立-Miniconda-的-Python-虛擬環境"><a href="#建立-Miniconda-的-Python-虛擬環境" class="headerlink" title="建立 Miniconda 的 Python 虛擬環境"></a>建立 Miniconda 的 Python 虛擬環境</h1><p>接下來我們來建立 Miniconda 的 Python 虛擬環境，首先我們需要開啟 Command Line ，點選 <code>Win</code>  之後搜尋『Command』就會出現啦！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fsearch-command.png?alt=media&amp;token=09648bf7-5f42-4135-9b10-5a329a342198" alt="search-command"></p>
+<p>黑黑的視窗看起來挺神秘的 .. </p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fopen-command.png?alt=media&amp;token=b2659361-b92d-426d-9f5e-cc10113986c2" alt="open-command"></p>
+<p>我們輸入 <code>conda info</code> 確認剛剛安裝的 Miniconda 是否有安裝成功吧！<br>嗯 .. 版本號等等資訊都出現就代表成功安裝啦！如果出現 <code>command not found : conda</code> 的話，代表你沒有將 Conda  加入系統環境變數哦，請回頭確認安裝步驟吧！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-info.png?alt=media&amp;token=0841bd1e-d003-4a00-8b83-41ecd0ba2ee8" alt="conda-info"></p>
+<p>Conda 在預設情況下會有個『Base』的 Python 環境，但我們不要使用它，我們要用我們自己建立的虛擬環境，輸入 <code>conda env list</code> 可以看到我們目前安裝了哪些環境</p>
+<p>接下來輸入，這邊我指定了虛擬環境的名稱為『MachineLearning』，並指定Python版本號為『3.6』版</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">conda create --name ml python=3.6</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Usage : </p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">conda create --name &lt;輸入任何名稱作為該虛擬環境的名稱&gt; python=&lt;版本號&gt;</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-create-venv.png?alt=media&amp;token=0fd78c6e-c7a0-4bfd-b057-f2ab166bf74e" alt="conda-create-venv"></p>
+<p>這樣就開始安裝了！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-venv-check-install-dependencies.png?alt=media&amp;token=01ba2b2e-bb00-4aa1-918a-b0c6b437aa1f" alt="conda-venv-check-install-dependencies"></p>
+<p>它問我是否要安裝 .. 當然要呀！輸入 <code>y</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-venv-y.png?alt=media&amp;token=9d02015a-d5f9-40b5-a2fd-9f1642d3d87d" alt="conda-venv-y"></p>
+<p>安裝中 ..</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-venv-installing.png?alt=media&amp;token=41de40b9-50c5-493d-b9d6-365d66d8241c" alt="conda-venv-installing"></p>
+<p>安裝完成</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-venv-installed.png?alt=media&amp;token=0416468d-9500-4787-81fe-d6182fd8ffed" alt="conda-venv-installed"></p>
+<p>再查看一次我們所有的 conda env 環境吧，新出現了一個 MachineLearning 環境了！</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">conda env list</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-env-list.png?alt=media&amp;token=38d87d39-7955-4faf-94d1-d70eae2bd3d4" alt="conda-env-list"></p>
+<p>輸入 <code>conda activate MachineLearning</code> 來啟動它吧</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">conda activate MachineLearning</span><br></pre></td></tr></tbody></table></figure>
+
+<p>這樣就啟動了，前面還會帶一個 <code>(MachineLearning)</code> 來提示我們目前是在哪一個環境哦</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-activate-venv.png?alt=media&amp;token=ba8177ed-778c-42ae-afe1-734b8cf0f051" alt="conda-activate-venv"></p>
+<p>輸入 <code>pip install tensorflow==2.1</code> 安裝機器學習所需要的Python 套件</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-pip-install-tensorflow.png?alt=media&amp;token=fee08c1e-e04a-4b52-a8f8-b959672f7450" alt="conda-pip-install-tensorflow"></p>
+<p>安裝中 .. 近500MB呢！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-pip-install-tensorflow-installing.png?alt=media&amp;token=91b55180-54cc-49da-a0ef-6f0b04ee403a" alt="conda-pip-install-tensorflow-installing"></p>
+<p>安裝完成</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fconda-pip-install-tensorflow-installed.png?alt=media&amp;token=156785d2-cc37-4fd1-ad09-46d2e25bd1d5" alt="conda-pip-install-tensorflow-installed"></p>
+<h1 id="安裝-Visual-Studio-Code"><a href="#安裝-Visual-Studio-Code" class="headerlink" title="安裝 Visual Studio Code"></a>安裝 Visual Studio Code</h1><p>安裝好開發環境，接下來準備一個好用的編輯器來寫Code吧！</p>
+<p>到 <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">Visual Studio Code 官方網站</a>下載軟體，選擇『Download』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-website.png?alt=media&amp;token=aae36eda-2495-4c00-b091-93c7737bbd5e" alt="vscode-website"></p>
+<p>選擇『User Installer 64-bit』就會下載了</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-download.png?alt=media&amp;token=88c5169f-b453-46eb-9009-aa0cd2149c24" alt="vscode-download"></p>
+<p>開啟檔案安裝它吧，選擇『I accept the agreement』、『Next』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-install-i-accept.png?alt=media&amp;token=ecb233cb-b34c-4a89-bb6e-f8c84135908f" alt="vscode-install-i-accept"></p>
+<p>全部勾選，然後『Next』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-additional-tasks.png?alt=media&amp;token=ca6b0a40-9277-451f-a56a-1635ec801e54" alt="vscode-additional-tasks"></p>
+<p>安裝它囉～</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-ready-to-install.png?alt=media&amp;token=a6d339c7-dcce-462e-8a6e-f93e2f3f7d69" alt="vscode-ready-to-install"></p>
+<p>安裝中 ..</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-installing.png?alt=media&amp;token=77f30071-f192-45c3-94e8-df9c333fbecf" alt="vscode-installing"></p>
+<p>安裝完成，點選『Finish』開啟VS code吧</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-install-finish.png?alt=media&amp;token=ee78e6c4-2b89-46cf-ad9f-ec689ff631f3" alt="vscode-install-finish"></p>
+<p>這是Visual Studio Code軟體的畫面，首先我們要先安裝一些幫助開發的Visual Studio Code輔助套件選擇紅框處</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-open-extension.png?alt=media&amp;token=6223c75b-6542-414b-9b95-633c88ca18ec" alt="vscode-open-extension"></p>
+<p>搜尋『Python』選擇第一個然後安裝它吧！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-search-and-install-python-extension.png?alt=media&amp;token=d3af6622-9f9d-46ef-b93b-4afd0ce0bf4b" alt="vscode-search-and-install-python-extension"></p>
+<p>呼～準備工作終於完成了，建立檔案然後開始寫Code吧！</p>
+<h1 id="測試開發環境"><a href="#測試開發環境" class="headerlink" title="測試開發環境"></a>測試開發環境</h1><p>選擇『File』→ 『New File』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-open-new-file.png?alt=media&amp;token=25e3884c-18c0-4fd1-ae11-cf57507b1ce3" alt="vscode-open-new-file"></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-new-file-overview.png?alt=media&amp;token=efb2f9e8-7de4-4257-8af9-44df63de65cc" alt="vscode-new-file-overview"></p>
+<p>輸入以下測試Code ，來源：<a href="https://www.tensorflow.org/tutorials/quickstart/beginner" target="_blank" rel="noopener">TensorFlow 2 quickstart for beginners</a></p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line">mnist = tf.keras.datasets.mnist</span><br><span class="line"></span><br><span class="line">(x_train, y_train), (x_test, y_test) = mnist.load_data()</span><br><span class="line">x_train, x_test = x_train / <span class="number">255.0</span>, x_test / <span class="number">255.0</span></span><br><span class="line"></span><br><span class="line">model = tf.keras.models.Sequential([</span><br><span class="line">  tf.keras.layers.Flatten(input_shape=(<span class="number">28</span>, <span class="number">28</span>)),</span><br><span class="line">  tf.keras.layers.Dense(<span class="number">128</span>, activation=<span class="string">'relu'</span>),</span><br><span class="line">  tf.keras.layers.Dropout(<span class="number">0.2</span>),</span><br><span class="line">  tf.keras.layers.Dense(<span class="number">10</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">predictions = model(x_train[:<span class="number">1</span>]).numpy()</span><br><span class="line">predictions</span><br><span class="line"></span><br><span class="line">tf.nn.softmax(predictions).numpy()</span><br><span class="line">loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=<span class="literal">True</span>)</span><br><span class="line">loss_fn(y_train[:<span class="number">1</span>], predictions).numpy()</span><br><span class="line">model.compile(optimizer=<span class="string">'adam'</span>,</span><br><span class="line">              loss=loss_fn,</span><br><span class="line">              metrics=[<span class="string">'accuracy'</span>])</span><br><span class="line"></span><br><span class="line">model.fit(x_train, y_train, epochs=<span class="number">5</span>)</span><br><span class="line">model.evaluate(x_test,  y_test, verbose=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">probability_model = tf.keras.Sequential([</span><br><span class="line">  model,</span><br><span class="line">  tf.keras.layers.Softmax()</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">probability_model(x_test[:<span class="number">5</span>])</span><br></pre></td></tr></tbody></table></figure>
+
+<p>存檔，檔名後綴要有 <code>.py</code> 哦！</p>
+<p>選擇Save type : All Files</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-save-type-all-files.png?alt=media&amp;token=192efd69-0285-4beb-87af-0830a0d337c3" alt="vscode-save-type-all-files"></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-enter-file-name.png?alt=media&amp;token=3308364d-61d2-46af-a24b-56d1c3a125b4" alt="vscode-enter-file-name"></p>
+<p>選擇『Select Python Interpreter』選擇剛剛建立的虛擬環境『MachineLearning』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-select-interpreter.png?alt=media&amp;token=96760349-9e7e-461e-81d6-1ea43fd05ea9" alt="vscode-select-interpreter"></p>
+<p>當右下角跳出此畫面時，選擇『Install』</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-install-pylint.png?alt=media&amp;token=f4d9325d-c9d2-440d-8b25-8d48cb607772" alt="vscode-install-pylint"></p>
+<p>選擇使用『Pip』安裝</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-pip-install-pylint.png?alt=media&amp;token=826a11b2-e74e-4f11-a34b-98483c3c4f3a" alt="vscode-pip-install-pylint"></p>
+<p>安裝完成</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-pylint-installed.png?alt=media&amp;token=f4338244-b70f-40f3-a791-1cd0ea69cc91" alt="vscode-pylint-installed"></p>
+<p>選擇『Run Python in Terminal』程式就開始執行囉！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-run-file-in-terminal.png?alt=media&amp;token=2a172a4d-1f1a-458f-bdd1-489083cb23be" alt="vscode-run-file-in-terminal"></p>
+<p>執行結果：</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-machine-learning-environment-in-windows-10%2Fvscode-example-result.png?alt=media&amp;token=915eedc8-eba7-4532-8f33-7c2dc0a49f5d" alt="vscode-example-result"></p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Machine Leraning</category>
+      </categories>
+      <tags>
+        <tag>Machine Learning</tag>
+        <tag>Tensorflow</tag>
+        <tag>Windows</tag>
+        <tag>Miniconda</tag>
+        <tag>Visual Studio Code</tag>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Install openssh-server on Ubuntu and ssh usage</title>
+    <url>/2020/install-openssh-server-on-ubuntu-and-ssh-usage/</url>
+    <content><![CDATA[<h1 id="Install-openssh"><a href="#Install-openssh" class="headerlink" title="Install openssh"></a>Install openssh</h1><p>Update first</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo apt-get update -y</span><br></pre></td></tr></tbody></table></figure>
+<a id="more"></a>
+
+<p>Install openssh-server</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo apt install openssh-server -y</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-openssh-server-on-ubuntu-and-ssh-usage%2Finstall-openssh-server.png?alt=media&amp;token=fd75beab-37c9-44a5-80fd-f06ccd322635" alt="install-openssh-server"></p>
+<h1 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h1><p>Check IP by</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">ifconfig</span><br></pre></td></tr></tbody></table></figure>
+
+<p>If you got this:</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-openssh-server-on-ubuntu-and-ssh-usage%2Fifconfig.png?alt=media&amp;token=bb9e2554-3172-4f15-92e4-107d7edd14d6" alt="ifconfig"></p>
+<p>Install <code>ifconfig</code> by </p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo apt install net-tools -y</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Or use the command to get your IP address</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">ip addr</span><br></pre></td></tr></tbody></table></figure>
+
+<p>And connect via </p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">ssh &lt;username&gt;@&lt;hostname&gt;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Or </p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">ssh &lt;username&gt;@&lt;hostname&gt; -p &lt;port&gt;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>To using default 22 port to connect</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-openssh-server-on-ubuntu-and-ssh-usage%2Fconnect-host-via-ssh.png?alt=media&amp;token=4f510762-7107-4e2c-871b-3925286c908c" alt="connect-host-via-ssh"></p>
+<p>Enable ssh service start on boot：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo systemctl <span class="built_in">enable</span> ssh</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Let firewall allow ssh service</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo ufw allow ssh</span><br><span class="line"><span class="comment"># or</span></span><br><span class="line">sudo ufw allow 22</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="Allow-root-login"><a href="#Allow-root-login" class="headerlink" title="Allow root login"></a>Allow root login</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"><span class="comment"># change "PermitRootLogin no" to "PermitRootLogin yes"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="ssh-keyless-login"><a href="#ssh-keyless-login" class="headerlink" title="ssh keyless login"></a>ssh keyless login</h1><p>Create ssh rsa key on the computer you want to connect to host</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">[neil@yimincai.net ~]$ ssh-keygen -t rsa</span><br><span class="line"></span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file <span class="keyword">in</span> <span class="built_in">which</span> to save the key (/home/neil/.ssh/id_rsa): [Press enter key]</span><br><span class="line">Created directory <span class="string">'/home/neil/.ssh'</span>.</span><br><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase): [Press enter key]</span><br><span class="line">Enter same passphrase again: [Press enter key]</span><br><span class="line">Your identification has been saved <span class="keyword">in</span> /home/neil/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved <span class="keyword">in</span> /home/neil/.ssh/id_rsa.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line">1f:ad:49:00:4a:d5:ab:99:b3:b0:f9:09:91:c4:ed:d2 neil@yimincai.net</span><br><span class="line">The key<span class="string">'s randomart image is:</span></span><br><span class="line"><span class="string">+--[ RSA 2048]----+</span></span><br><span class="line"><span class="string">|        ..oooE.++|</span></span><br><span class="line"><span class="string">|         o. o..  |</span></span><br><span class="line"><span class="string">|          ..   . |</span></span><br><span class="line"><span class="string">|         o  . . o|</span></span><br><span class="line"><span class="string">|        S .  . + |</span></span><br><span class="line"><span class="string">|       . .    . o|</span></span><br><span class="line"><span class="string">|      . o o    ..|</span></span><br><span class="line"><span class="string">|       + +       |</span></span><br><span class="line"><span class="string">|        +.       |</span></span><br><span class="line"><span class="string">+-----------------+</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>Create .ssh Directory on host server</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">[neil@yimincai.net ~]$ ssh alyssa@192.168.50.6 mkdir -p .ssh</span><br><span class="line"></span><br><span class="line">The authenticity of host <span class="string">'192.168.50.6 (192.168.50.6)'</span> can<span class="string">'t be established.</span></span><br><span class="line"><span class="string">RSA key fingerprint is 48:0e:28:11:d6:81:68:16:04:5f:db:49:02:la:12:4e.</span></span><br><span class="line"><span class="string">Are you sure you want to continue connecting (yes/no)? yes</span></span><br><span class="line"><span class="string">Warning: Permanently added '</span>192.168.50.6<span class="string">' (ECDSA) to the list of known hosts.</span></span><br><span class="line"><span class="string">alyssa@192.168.50.6'</span>s password: [Enter Your Password Here]</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Copy public key from local to host server</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">cat ~/.ssh/id_rsa.pub | ssh alyssa@192.168.50.6 <span class="string">'cat &gt;&gt; .ssh/authorized_keys'</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>On host server restart ssh service</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">service ssh restatus</span><br></pre></td></tr></tbody></table></figure>
+
+<p>On host server check ssh service status</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">service ssh status</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-openssh-server-on-ubuntu-and-ssh-usage%2Fssh-status.png?alt=media&amp;token=eca58be5-7ebb-42ad-9e97-b6b7da906b17" alt="ssh-status"></p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Openssh</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Openssh server</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>在macOS安裝ZSH</title>
+    <url>/2020/install-zsh-on-macos/</url>
+    <content><![CDATA[<h1 id="安裝概覽"><a href="#安裝概覽" class="headerlink" title="安裝概覽:"></a>安裝概覽:</h1><ol>
+<li>Install Homebrew</li>
+<li>Install zsh</li>
+<li>Switch default shell to zsh</li>
+<li>Install oh-my-zsh</li>
+<li>Edit setting</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="安裝Homebrew"><a href="#安裝Homebrew" class="headerlink" title="安裝Homebrew"></a>安裝Homebrew</h1><p>Install <a href="https://brew.sh/index_zh-tw" target="_blank" rel="noopener" title="Homebrew">Homebrew</a></p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">/usr/bin/ruby -e <span class="string">"<span class="variable">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)</span>"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="安裝zsh"><a href="#安裝zsh" class="headerlink" title="安裝zsh"></a>安裝zsh</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">brew install zsh</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Confirm the installation</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">zsh --version</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="切換預設shell至zsh"><a href="#切換預設shell至zsh" class="headerlink" title="切換預設shell至zsh"></a>切換預設shell至zsh</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo sh -c <span class="string">"echo <span class="variable">$(which zsh)</span> &gt;&gt; /etc/shells"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">chsh -s $(<span class="built_in">which</span> zsh)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Restart termianl</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="variable">$SHELL</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>if success you’ll see:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/bin/zsh</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="安裝oh-my-zsh"><a href="#安裝oh-my-zsh" class="headerlink" title="安裝oh-my-zsh"></a>安裝oh-my-zsh</h1><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh</span><br></pre></td></tr></tbody></table></figure>
+<p>Copy oh-my-zsh templete to zshrc</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc</span><br></pre></td></tr></tbody></table></figure>
+<p>DONE!</p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Terminal</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>zsh</tag>
+        <tag>oh-my-zsh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>安裝zsh主題powerline</title>
+    <url>/2020/install-zsh-theme-with-powerline/</url>
+    <content><![CDATA[<h1 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h1><!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Finstall-zsh-theme-with-powerline%2Fpowerline-theme.png?alt=media&amp;token=4c9773da-3cf3-4678-8a6b-df61749f6602" alt="powerline-theme"></p>
+<a id="more"></a>
+
+<h1 id="zsh-settings"><a href="#zsh-settings" class="headerlink" title="zsh settings"></a>zsh settings</h1><p>Edit .zshrc</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">vim ~/.zshrc</span><br></pre></td></tr></tbody></table></figure>
+<p>Download theme</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme.git</span><br></pre></td></tr></tbody></table></figure>
+<p>Go to dir</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ./oh-my-zsh-powerline-theme</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Install theme</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">./install_in_omz.sh</span><br></pre></td></tr></tbody></table></figure>
+<p>Theme conf in file “.zshrc”</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">ZSH_THEME=<span class="string">"powerline"</span></span><br><span class="line">POWERLINE_HIDE_HOST_NAME=<span class="string">"true"</span></span><br><span class="line">POWERLINE_DISABLE_RPOMPT=<span class="string">"true"</span></span><br><span class="line">POWERLINE_FULL_CURRENT_PATH=<span class="string">"true"</span></span><br><span class="line">POWERLINE_PATH=<span class="string">"short"</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Install zsh-completions</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">brew install zsh-completions</span><br></pre></td></tr></tbody></table></figure>
+<p>Install zsh-autosuggestions</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">brew install zsh-autosuggestions</span><br></pre></td></tr></tbody></table></figure>
+<p>Install zsh-syntax-highlighting</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">brew install zsh-syntax-highlighting</span><br></pre></td></tr></tbody></table></figure>
+<p>zsh plugin setting in file “.zshrc” at /home/{username}</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> /usr/<span class="built_in">local</span>/share/zsh-autosuggestions/zsh-autosuggestions.zsh</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> /usr/<span class="built_in">local</span>/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh</span><br></pre></td></tr></tbody></table></figure>
+
+<p>zsh-completions settings</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">fpath=(/usr/<span class="built_in">local</span>/share/zsh-completions <span class="variable">$fpath</span>)</span><br></pre></td></tr></tbody></table></figure>
+<p>Download powerline fonts</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/powerline/fonts.git</span><br></pre></td></tr></tbody></table></figure>
+<p>Go to dir</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> fonts/</span><br></pre></td></tr></tbody></table></figure>
+<p>Install fonts</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">./install.sh</span><br></pre></td></tr></tbody></table></figure>
+<p>delete fonts installation files</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ..</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">rm -rf fonts</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h1 id="iTerm2-settings"><a href="#iTerm2-settings" class="headerlink" title="iTerm2 settings"></a>iTerm2 settings</h1><ul>
+<li><p>Change font to 14pt “Fira Mono Medium for Powerline”</p>
+</li>
+<li><p>Let iTerm2 colorset be “Brogrammer”</p>
+</li>
+</ul>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Terminal</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>zsh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux使用find指令查詢特定檔案及目錄並刪除</title>
+    <url>/2020/linux-find-specific-folder-or-file-and-delete/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>在Linux底下當我們要針對資料夾的特定檔案執行操作時，如果一個一個的做非常麻煩又沒消率，我們可以透過 <code>find</code> 指令解決這個問題，以下提供一個刪除檔案的例子。</p>
+<a id="more"></a>
+
+<h1 id="命令格式"><a href="#命令格式" class="headerlink" title="命令格式"></a>命令格式</h1><p>使用 <code>find</code> 命令將當前目錄下所有包含特定字元檔名的文件刪除：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find &lt;路徑&gt;  -name <span class="string">"&lt;檔案名稱&gt;"</span> -<span class="built_in">exec</span> &lt;操作&gt; {} \;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>這邊有一個刪除操作的例子：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find .  -name <span class="string">"fileName.subName"</span> -<span class="built_in">exec</span> rm -rf {} \;</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li><code>find .</code> ：表示尋找當前目錄</li>
+<li><code>&lt;檔案名稱&gt;</code> 可以替換成： <code>*.git</code> 、 <code>*.git*</code> 、 <code>*subName*.*</code> ， <code>*</code> 為萬用字元</li>
+<li><code>-exec</code> ：操作選項</li>
+<li><code>rm -rf</code> ：強制刪除檔案及目錄</li>
+<li><code>{} \;</code> ：固定寫法</li>
+</ul>
+<h1 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h1><p><code>-iname</code> ：搜尋名稱不區分大小寫</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find /etc -iname <span class="string">'hosts'</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-type f</code> ：搜尋<strong>檔案</strong>名稱</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find /var/<span class="built_in">log</span> -iname <span class="string">'*.txt'</span> -<span class="built_in">type</span> f</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-type d</code> ：搜尋<strong>目錄</strong>名稱</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find /etc -iname <span class="string">'tomcat'</span> -<span class="built_in">type</span> d</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-size +100M</code> ：搜尋 <code>/var</code> 下檔案大於100MB的檔案</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find /var -<span class="built_in">type</span> f -size +100M</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-size -100M</code> ：搜尋 <code>/var</code> 下檔案小於100MB的檔案</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find /var -<span class="built_in">type</span> f -size -100M</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-atime -14</code> ：檔案的最後讀取或執行時間到find 的執行時間差(access time)，以天為單位，本案例為十四天</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find <span class="variable">$HOME</span> -<span class="built_in">type</span> f -atime -14</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-amin -10</code> ：同 <code>-atime</code> ，改以分鐘為單位，本案例為三十分鐘</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find <span class="variable">$HOME</span> -<span class="built_in">type</span> f -amin -30</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-ctime +7</code> ：檔案的建立時間到find 的執行時間差(create time)，以天為單位，本案例為七天</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find <span class="variable">$HOME</span> -<span class="built_in">type</span> f -ctime +7</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-user &lt;user name&gt;</code> ：搜尋特定使用者檔案，本案例以 <code>neil</code> 為例</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find <span class="variable">$HOME</span> -<span class="built_in">type</span> f -user neil</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-0</code> ：同時找兩種檔名樣式的檔案(or)</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find <span class="variable">$HOME</span> -name <span class="string">'*.dog'</span> -o -name <span class="string">'*.cat'</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>-and</code> ：同時找兩種檔名樣式的檔案(and)</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">find <span class="variable">$HOME</span> -name <span class="string">'*.dog'</span> -o -name <span class="string">'*.cat'</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="其他指令"><a href="#其他指令" class="headerlink" title="其他指令"></a>其他指令</h1><ul>
+<li><p>d：目錄(directory)</p>
+</li>
+<li><p>c：字型裝置檔案(character)</p>
+</li>
+<li><p>b：區塊裝置檔案(block special)</p>
+</li>
+<li><p>p：pipe (FIFO)</p>
+</li>
+<li><p>f：一般檔案(regular file)</p>
+</li>
+<li><p>l：symbolic link</p>
+</li>
+<li><p>s：socket</p>
+</li>
+</ul>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>macOS</tag>
+        <tag>Terminal</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SSH連線出現錯誤 WARNING REMOTE HOST IDENTIFICATION HAS CHANGED!</title>
+    <url>/2020/ssh-warning-remote-host-identification-has-changed/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>當在使用SSH連線到別台主機時若出現以下錯誤可參考以下解決方式。</p>
+<a id="more"></a>
+
+<p>錯誤訊息：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">[neil@yimincai.net ~]$ ssh alyssa@192.168.50.6</span><br><span class="line">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><br><span class="line">@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @</span><br><span class="line">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><br><span class="line">IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!</span><br><span class="line">Someone could be eavesdropping on you right now (man-in-the-middle attack)!</span><br><span class="line">It is also possible that the RSA host key has just been changed.</span><br><span class="line">The fingerprint <span class="keyword">for</span> the RSA key sent by the remote host is</span><br><span class="line">48:0e:28:11:d6:81:68:16:04:5f:db:49:02:la:12:4e.</span><br><span class="line">Please contact your system administrator.</span><br><span class="line">Add correct host key <span class="keyword">in</span> /root/.ssh/known_hosts to get rid of this message.</span><br><span class="line">Offending key <span class="keyword">in</span> /root/.ssh/known_hosts:12</span><br><span class="line">RSA host key <span class="keyword">for</span> 192.168.50.6 has changed and you have requested strict checking.</span><br><span class="line">Host key verification failed.</span><br></pre></td></tr></tbody></table></figure>
+
+<p>解決方法（擇一即可）：</p>
+<h2 id="1-把有問題的host-key刪掉"><a href="#1-把有問題的host-key刪掉" class="headerlink" title="1. 把有問題的host key刪掉"></a>1. 把有問題的host key刪掉</h2><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">vim /neil/.ssh/known_hosts</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="2-刪除known-hosts"><a href="#2-刪除known-hosts" class="headerlink" title="2. 刪除known_hosts"></a>2. 刪除known_hosts</h2><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">rm -rf  /neil/.ssh/known_hosts</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="3-重新產生key"><a href="#3-重新產生key" class="headerlink" title="3. 重新產生key"></a>3. 重新產生key</h2><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">ssh-keygen -R 192.168.50.6</span><br></pre></td></tr></tbody></table></figure><script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Openssh</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Openssh server</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tensorflow與Keras版本對應</title>
+    <url>/2020/tensorflow-corresponding-to-keras-version/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>錯誤： <code>ModuleNotFoundError: No module named 'tensorflow.keras'</code></p>
+<ol>
+<li>Tensorflow、Kears版本對應錯誤</li>
+<li>import方式錯誤：</li>
+</ol>
+<a id="more"></a>
+
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> tensorflow.keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line"><span class="comment"># 改成</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> tensorflow.python.keras <span class="keyword">import</span> layers</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="Tensorflow-與Keras版本對應"><a href="#Tensorflow-與Keras版本對應" class="headerlink" title="Tensorflow 與Keras版本對應"></a>Tensorflow 與Keras版本對應</h1><table>
+<thead>
+<tr>
+<th align="left">Framework</th>
+<th align="left">Env name (–env parameter)</th>
+<th align="left">Description</th>
+<th align="left">Docker Image</th>
+<th align="left">Packages and Nvidia Settings</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">TensorFlow 1.14</td>
+<td align="left">tensorflow-1.14</td>
+<td align="left">TensorFlow 1.14.0 + Keras 2.2.5 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"><a href="https://docs.floydhub.com/guides/tensorflow/#tensorflow-114" target="_blank" rel="noopener">TensorFlow-1.14</a></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.13</td>
+<td align="left">tensorflow-1.13</td>
+<td align="left">TensorFlow 1.13.0 + Keras 2.2.4 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"><a href="https://docs.floydhub.com/guides/tensorflow/#tensorflow-113" target="_blank" rel="noopener">TensorFlow-1.13</a></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.12</td>
+<td align="left">tensorflow-1.12</td>
+<td align="left">TensorFlow 1.12.0 + Keras 2.2.4 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"><a href="https://docs.floydhub.com/guides/tensorflow/#tensorflow-112" target="_blank" rel="noopener">TensorFlow-1.12</a></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.12:py2</td>
+<td align="left">TensorFlow 1.12.0 + Keras 2.2.4 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.11</td>
+<td align="left">tensorflow-1.11</td>
+<td align="left">TensorFlow 1.11.0 + Keras 2.2.4 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"><a href="https://docs.floydhub.com/guides/tensorflow/#tensorflow-111" target="_blank" rel="noopener">TensorFlow-1.11</a></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.11:py2</td>
+<td align="left">TensorFlow 1.11.0 + Keras 2.2.4 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.10</td>
+<td align="left">tensorflow-1.10</td>
+<td align="left">TensorFlow 1.10.0 + Keras 2.2.0 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"><a href="https://docs.floydhub.com/guides/tensorflow/#tensorflow-110" target="_blank" rel="noopener">TensorFlow-1.10</a></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.10:py2</td>
+<td align="left">TensorFlow 1.10.0 + Keras 2.2.0 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.9</td>
+<td align="left">tensorflow-1.9</td>
+<td align="left">TensorFlow 1.9.0 + Keras 2.2.0 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"><a href="https://docs.floydhub.com/guides/tensorflow/#tensorflow-19" target="_blank" rel="noopener">TensorFlow-1.9</a></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.9:py2</td>
+<td align="left">TensorFlow 1.9.0 + Keras 2.2.0 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.8</td>
+<td align="left">tensorflow-1.8</td>
+<td align="left">TensorFlow 1.8.0 + Keras 2.1.6 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"><a href="https://docs.floydhub.com/guides/tensorflow/#tensorflow-18" target="_blank" rel="noopener">TensorFlow-1.8</a></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.8:py2</td>
+<td align="left">TensorFlow 1.8.0 + Keras 2.1.6 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.7</td>
+<td align="left">tensorflow-1.7</td>
+<td align="left">TensorFlow 1.7.0 + Keras 2.1.6 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"><a href="https://docs.floydhub.com/guides/tensorflow/#tensorflow-17" target="_blank" rel="noopener">TensorFlow-1.7</a></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.7:py2</td>
+<td align="left">TensorFlow 1.7.0 + Keras 2.1.6 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.5</td>
+<td align="left">tensorflow-1.5</td>
+<td align="left">TensorFlow 1.5.0 + Keras 2.1.6 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"><a href="https://docs.floydhub.com/guides/tensorflow/#tensorflow-15" target="_blank" rel="noopener">TensorFlow-1.5</a></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.5:py2</td>
+<td align="left">TensorFlow 1.5.0 + Keras 2.1.6 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.4</td>
+<td align="left">tensorflow-1.4</td>
+<td align="left">TensorFlow 1.4.0 + Keras 2.0.8 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.4:py2</td>
+<td align="left">TensorFlow 1.4.0 + Keras 2.0.8 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.3</td>
+<td align="left">tensorflow-1.3</td>
+<td align="left">TensorFlow 1.3.0 + Keras 2.0.6 on Python 3.6.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.3:py2</td>
+<td align="left">TensorFlow 1.3.0 + Keras 2.0.6 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.2</td>
+<td align="left">tensorflow-1.2</td>
+<td align="left">TensorFlow 1.2.0 + Keras 2.0.6 on Python 3.5.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow-1.2:py2</td>
+<td align="left">TensorFlow 1.2.0 + Keras 2.0.6 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.1</td>
+<td align="left">tensorflow</td>
+<td align="left">TensorFlow 1.1.0 + Keras 2.0.6 on Python 3.5.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">tensorflow:py2</td>
+<td align="left">TensorFlow 1.1.0 + Keras 2.0.6 on Python 2.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">TensorFlow 1.0</td>
+<td align="left">tensorflow-1.0</td>
+<td align="left">TensorFlow 1.0.0 + Keras 2.0.6 on Python 3.5.</td>
+<td align="left"><a href="https://hub.docker.com/r/floydhub/tensorflow/" target="_blank" rel="noopener">floydhub/tensorflow</a></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h1 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h1><ul>
+<li><a href="https://blog.csdn.net/Eric_Blog_CSDN/article/details/88420234" target="_blank" rel="noopener">keras学习- No module named ‘ tensorflow.keras ‘ 报错，看清 tf.keras与keras</a></li>
+<li><a href="https://docs.floydhub.com/guides/environments/" target="_blank" rel="noopener">floydhub Environments</a></li>
+</ul>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Machine Learning</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Ubuntu</tag>
+        <tag>Tensorflow</tag>
+        <tag>Python</tag>
+        <tag>Keras</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu Change Screen Resolution through the Terminal</title>
+    <url>/2020/ubuntu-change-screen-resolution-through-the-terminal/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>Xrandr工具可用於動態設定螢幕輸出解析度及比例，默認情況下，此軟體安裝在Ubuntu 18.04上。</p>
+<a id="more"></a>
+
+<h1 id="Changing-Screen-Resolution-through-Terminal"><a href="#Changing-Screen-Resolution-through-Terminal" class="headerlink" title="Changing Screen Resolution through Terminal"></a>Changing Screen Resolution through Terminal</h1><p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fubuntu-change-screen-resolution-through-the-terminal%2Fterminal.png?alt=media&amp;token=03383e5f-75c6-4f82-961e-a1521c47dc3b" alt="terminal"></p>
+<p>我們使用xrandr工具調整螢幕尺寸：</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">-s, –size size-index or –size &lt;寬&gt;x&lt;高&gt;</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">xrandr–size [size-index]</span><br></pre></td></tr></tbody></table></figure>
+
+<p>For example:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">xrandr --size:3</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fubuntu-change-screen-resolution-through-the-terminal%2Fxrandr4x3.png?alt=media&amp;token=e22b95ed-0ccb-4a82-87d8-5438096d3c1e" alt="xrandr4x3"></p>
+<p>Or,</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">xrandr–size [widthxheight]</span><br></pre></td></tr></tbody></table></figure>
+
+<p>For example:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">xrandr --size 1280x800</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fubuntu-change-screen-resolution-through-the-terminal%2Fxrandr1280x800.png?alt=media&amp;token=cf884533-aaff-44fa-9a57-ce3cab074002" alt="xrandr1280x800"></p>
+<p>通過這個簡單的工具我們可以在 command line 中調整畫面解析度、比例。</p>
+<h1 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h1><ul>
+<li><a href="https://vitux.com/how-to-change-screen-resolution-through-the-ubuntu-terminal/" target="_blank" rel="noopener">How to Change Screen Resolution through the Ubuntu Terminal</a></li>
+</ul>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Ubuntu</tag>
+        <tag>Terminal</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解決Ubuntu安裝軟體snap &quot;code-insiders&quot; has &quot;install-snap&quot; change</title>
+    <url>/2020/ubuntu-install-snap-change-in-progress/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p><span class="github-emoji" style="color: transparent;background:no-repeat url(https://github.githubassets.com/images/icons/emoji/unicode/26a0.png?v8) center/contain" data-src="https://github.githubassets.com/images/icons/emoji/unicode/26a0.png?v8">⚠</span> 我通過Ubuntu自帶的『Software』下載安裝，可是他卻提示我：</p>
+ <figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">Unable to install <span class="string">"Visual Studio Code"</span>: snap <span class="string">"code"</span> has <span class="string">"install-snap"</span> change <span class="keyword">in</span> progress.</span><br></pre></td></tr></tbody></table></figure>
+<a id="more"></a>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fubuntu-install-snap-change-in-progress%2Finstall-snap-change-in-progress.png?alt=media&amp;token=de46b63d-9865-4cbb-a91e-a0b99beff59d" alt="install-snap-change-in-progress"></p>
+<h2 id="原因："><a href="#原因：" class="headerlink" title="原因："></a>原因：</h2><p>軟體之前安裝過一次，但是因為一些原因沒有安裝成功</p>
+<h2 id="解決方法："><a href="#解決方法：" class="headerlink" title="解決方法："></a>解決方法：</h2><p>查看安裝情況：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">snap changes</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fubuntu-install-snap-change-in-progress%2Fsnap-changes.png?alt=media&amp;token=d042e40c-c521-4369-b134-a8b690eaf9e7" alt="snap-changes"></p>
+<p>終止，並重新安裝</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">sudo snap abort 3</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fubuntu-install-snap-change-in-progress%2Fsnap-abort.png?alt=media&amp;token=edcc8541-453b-448e-9c88-6d1db37a637a" alt="snap-abort"></p>
+<p>就好了！</p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Ubuntu</tag>
+        <tag>Visual Studio Code</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux 從遠端伺服器複製檔案 - scp</title>
+    <url>/2020/using-scp-on-linux/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>scp是一種Linux指令，可以實現跨Internet(WAN/LAN)傳送資料。</p>
+<a id="more"></a>
+
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment">#example:</span></span><br><span class="line">scp -r neil@192.168.50.6:/home/neil/Documents/Dev/ ~/Downloads</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># -r 指複製整個目錄（資料夾）</span></span><br><span class="line">scp -r &lt;username&gt;@host:&lt;<span class="built_in">which</span> remote dir cp to&gt; &lt;<span class="built_in">local</span> dir&gt;</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fusing-scp-on-linux%2Fscp-usage.png?alt=media&amp;token=4fddb05a-0e93-471c-ba0f-53b769e29b66" alt="scp-usage"></p>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Terminal</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Visual Studio code : code command not found</title>
+    <url>/2020/Visual-Studio-code-code-command-not-found/</url>
+    <content><![CDATA[<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>在Terminal中使用VScode中自帶的code函數時，出現錯誤如下：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">command</span> not found code</span><br></pre></td></tr></tbody></table></figure>
+
+<a id="more"></a>
+
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fvisual-studio-code-command-not-found%2Fcode-command-not-found.png?alt=media&amp;token=6c53f011-5b14-4bec-9af0-f75f757ce5e2" alt="code-command-not-found"></p>
+<h1 id="除錯"><a href="#除錯" class="headerlink" title="除錯"></a>除錯</h1><ol>
+<li>確保已將Visual Studio Code應用程式放到Applications文件夾中，否則 VS code 重新啟動後，您將不得不再次執行此過程</li>
+<li>接下來打開Visual Studio Code，透過<strong>（⇧⌘P）</strong>打開面板然後輸入以找到Shell命令：<code>shell command</code></li>
+</ol>
+<p>選擇 <strong>Install ‘code’ command in PATH</strong></p>
+<!--  -->
+<p><img src="https://firebasestorage.googleapis.com/v0/b/hexo-neil-blog-db.appspot.com/o/blog-img%2Fvisual-studio-code-command-not-found%2Fvscode-shell-command.png?alt=media&amp;token=717e613c-f83d-4476-b7e3-e624e46a46f8" alt="vscode-shell-command"></p>
+<p>最後重啟Terminal或執行(<code>~/.bash_profile</code>, <code>~/.zshrc</code>, <code>~/.profile</code>, or <code>~/.bashrc</code>)：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ <span class="built_in">source</span> ~/.zshrc</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h1><ul>
+<li><a href="https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line" target="_blank" rel="noopener">Visual Studio Code Documentation</a></li>
+</ul>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>]]></content>
+      <categories>
+        <category>Visual Studio Code</category>
+      </categories>
+      <tags>
+        <tag>Visual Studio Code</tag>
+        <tag>Terminal</tag>
+      </tags>
+  </entry>
+</search>
